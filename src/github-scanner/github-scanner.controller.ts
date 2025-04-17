@@ -1,28 +1,24 @@
 import { Body, Controller, Get, Post, Query } from '@nestjs/common';
 import { GithubScannerService } from './github-scanner.service';
+import { ScanReposDto } from './github-repository.types';
 
 @Controller('github-scanner')
 export class GithubScannerController {
   constructor(private readonly githubService: GithubScannerService) {}
 
   @Get('repos')
-  async listRepos(@Query('token') token: string, @Query('user') user: string) {
-    return this.githubService.getRepos(token, user);
-  }
-
-  @Get('repo')
-  async repoDetails(
+  async listRepos(
     @Query('token') token: string,
-    @Query('owner') owner: string,
-    @Query('repo') repo: string,
+    @Query('user_name') user_name: string,
   ) {
-    return this.githubService.getRepoDetails(token, owner, repo);
+    return this.githubService.getRepos(token, user_name);
   }
 
-  @Post('scan-all')
-  async scanAll(
-    @Body() body: { token: string; repos: { owner: string; repo: string }[] },
+  @Post('scan-repos')
+  async repoDetails(
+    @Body()
+    dto: ScanReposDto,
   ) {
-    return this.githubService.scanReposInParallel(body.token, body.repos);
+    return this.githubService.scanReposInParallel(dto);
   }
 }
